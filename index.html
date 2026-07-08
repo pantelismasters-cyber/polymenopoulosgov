@@ -445,5 +445,57 @@ body{
   }, { passive: true });
 </script>
 
+<!-- Modal for name mappings -->
+<style>
+  .modal-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:2000;padding:20px}
+  .modal-overlay.active{display:flex}
+  .modal-card{width:100%;max-width:520px;background:#ffffff;border-radius:12px;overflow:hidden;color:#05204a;box-shadow:0 12px 40px rgba(2,6,23,0.55)}
+  .modal-header{padding:18px 20px;background:#0a1c4a;color:#fff;display:flex;align-items:center;justify-content:space-between}
+  .modal-body{padding:18px 20px;font-size:15px;line-height:1.45}
+  .modal-close{background:transparent;border:0;color:#fff;font-size:20px;cursor:pointer}
+  .name-list{display:flex;flex-direction:column;gap:8px}
+  .name-item{display:flex;justify-content:space-between;padding:10px;border-radius:8px;background:rgba(10,28,74,0.04)}
+</style>
+
+<div id="nameModal" class="modal-overlay" role="dialog" aria-hidden="true">
+  <div class="modal-card" role="document">
+    <div class="modal-header">
+      <strong>Αντικαταστάσεις Ονομάτων</strong>
+      <button class="modal-close" id="modalClose" aria-label="Κλείσιμο">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="name-list">
+        <div class="name-item"><span>ΚΑΣΜΑΣ</span><strong>ΠΟΛΥΜΕΝΟΠΟΥΛΟΣ</strong></div>
+        <div class="name-item"><span>KASMAS</span><strong>POLYMENOPOULOS</strong></div>
+        <div class="name-item"><span>ΠΑΝΤΕΛΕΗΜΩΝ</span><strong>ΠΑΝΑΓΙΩΤΗΣ</strong></div>
+        <div class="name-item"><span>PANTELEIMON</span><strong>PANAGIOTIS</strong></div>
+        <div class="name-item"><span>ΙΩΑΝΝΗΣ</span><strong>ΣΤΕΦΑΝΟΣ</strong></div>
+        <div class="name-item"><span>IOANNIS</span><strong>STEFANOS</strong></div>
+        <div class="name-item"><span>ΕΛΕΝΗ</span><strong>ΕΛΕΝΗ</strong></div>
+        <div class="name-item"><span>Ημερομηνία Γέννησης</span><strong>14/02/2008</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Modal logic: open when any cphoto img is clicked
+  (function(){
+    const modal = document.getElementById('nameModal');
+    const closeBtn = document.getElementById('modalClose');
+    function openModal(){ modal.classList.add('active'); modal.setAttribute('aria-hidden','false'); }
+    function closeModal(){ modal.classList.remove('active'); modal.setAttribute('aria-hidden','true'); }
+    // Attach to all cphoto images
+    document.querySelectorAll('.cphoto img').forEach(img => {
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', e => { e.stopPropagation(); openModal(); });
+    });
+    // Close handlers
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+  })();
+</script>
+
 </body>
 </html>
