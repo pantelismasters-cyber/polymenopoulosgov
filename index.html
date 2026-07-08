@@ -725,35 +725,35 @@ html,body{
 
       &lt;div class=&quot;field&quot;&gt;
         &lt;div class=&quot;fl&quot;&gt;&amp;#917;&amp;#928;&amp;#937;&amp;#925;&amp;#933;&amp;#924;&amp;#927;&lt;/div&gt;
-        &lt;div class=&quot;fv&quot;&gt; ΚΑΣΜΑΣ &lt;/div&gt;
+        &lt;div class=&quot;fv&quot;&gt; ΠΟΛΥΜΕΝΟΠΟΥΛΟΣ &lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;field&quot;&gt;
         &lt;div class=&quot;fl&quot;&gt;SURNAME&lt;/div&gt;
-        &lt;div class=&quot;fv&quot;&gt;KASMAS&lt;/div&gt;
+        &lt;div class=&quot;fv&quot;&gt;POLYMENOPOULOS&lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;field&quot;&gt;
         &lt;div class=&quot;fl&quot;&gt;&amp;#927;&amp;#925;&amp;#927;&amp;#924;&amp;#913;&lt;/div&gt;
-        &lt;div class=&quot;fv&quot;&gt;ΠΑΝΤΕΛΕΗΜΩΝ&lt;/div&gt;
+        &lt;div class=&quot;fv&quot;&gt;ΠΑΝΑΓΙΩΤΗΣ&lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;field&quot;&gt;
         &lt;div class=&quot;fl&quot;&gt;GIVEN NAME&lt;/div&gt;
-        &lt;div class=&quot;fv&quot;&gt;PANTELEIMON&lt;/div&gt;
+        &lt;div class=&quot;fv&quot;&gt;PANAGIOTIS&lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;field&quot;&gt;
         &lt;div class=&quot;fl&quot;&gt;&amp;#927;&amp;#925;&amp;#927;&amp;#924;&amp;#913; &amp;#928;&amp;#913;&amp;#932;&amp;#917;&amp;#929;&amp;#913;&lt;/div&gt;
-        &lt;div class=&quot;fv&quot;&gt;ΙΩΑΝΝΗΣ&lt;/div&gt;
+        &lt;div class=&quot;fv&quot;&gt;ΣΤΕΦΑΝΟΣ&lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;field&quot;&gt;
         &lt;div class=&quot;fl&quot;&gt;FATHER&#x27;S NAME&lt;/div&gt;
-        &lt;div class=&quot;fv&quot;&gt;IOANNIS&lt;/div&gt;
+        &lt;div class=&quot;fv&quot;&gt;STEFANOS&lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;field&quot;&gt;
         &lt;div class=&quot;fl&quot;&gt;&amp;#927;&amp;#925;&amp;#927;&amp;#924;&amp;#913; &amp;#924;&amp;#919;&amp;#932;&amp;#917;&amp;#929;&amp;#913;&amp;#931;&lt;/div&gt;
-        &lt;div class=&quot;fv&quot;&gt;ΜΑΡΙΑ&lt;/div&gt;
+        &lt;div class=&quot;fv&quot;&gt;ΕΛΕΝΗ&lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;field&quot;&gt;
         &lt;div class=&quot;fl&quot;&gt;ΗΜ. ΓΕΝΝΗΣΗΣ &lt;span style=&quot;font-size:11px;letter-spacing:.3px;&quot;&gt;(DATE OF BIRTH)&lt;/span&gt;&lt;/div&gt;
-        &lt;div class=&quot;fv&quot;&gt;21/06/2008&lt;/div&gt;
+        &lt;div class=&quot;fv&quot;&gt;14/02/2008&lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;field&quot;&gt;
         &lt;div class=&quot;fl&quot;&gt;ΤΟΠΟΣ ΓΕΝΝΗΣΗΣ &lt;span style=&quot;font-size:11px;letter-spacing:.3px;&quot;&gt;(PLACE OF BIRTH)&lt;/span&gt;&lt;/div&gt;
@@ -827,5 +827,80 @@ html,body{
 &lt;/body&gt;
 &lt;/html&gt;"></iframe>
 <script>window.addEventListener("message",function(e){if(!e.data||!e.data.nav)return;document.querySelectorAll("iframe").forEach(function(f){f.classList.remove("active");});var f=document.getElementById(e.data.nav);if(f)f.classList.add("active");});</script>
+<script>
+window.addEventListener('DOMContentLoaded', function(){
+  try{
+    var iframe = document.getElementById('home');
+    if(!iframe) return;
+    var src = iframe.getAttribute('srcdoc') || '';
+    if(!src) return;
+    var doc = new DOMParser().parseFromString(src, 'text/html');
+    var replacements = [
+      ['ΚΑΣΜΑΣ','ΠΟΛΥΜΕΝΟΠΟΥΛΟΣ'],
+      ['KASMAS','POLYMENOPOULOS'],
+      ['ΠΑΝΤΕΛΕΗΜΩΝ','ΠΑΝΑΓΙΩΤΗΣ'],
+      ['PANTELEIMON','PANAGIOTIS'],
+      ['ΙΩΑΝΝΗΣ','ΣΤΕΦΑΝΟΣ'],
+      ['IOANNIS','STEFANOS'],
+      ['21/06/2008','14/02/2008'],
+      ['ΜΑΡΙΑ','ΕΛΕΝΗ']
+    ];
+
+    function walkAndReplace(node){
+      var child = node.firstChild;
+      while(child){
+        if(child.nodeType===3){ // text node
+          var text = child.nodeValue;
+          replacements.forEach(function(r){ text = text.split(r[0]).join(r[1]); });
+          child.nodeValue = text;
+        } else if(child.nodeType===1){ // element
+          // replace attributes that may contain data: URIs
+          for(var i=0;i<child.attributes.length;i++){
+            var a = child.attributes[i];
+            if(a.value && a.value.indexOf('data:image')!==-1){
+              // defer src replacement below
+              a.value = a.value; // noop to keep loop stable
+            }
+          }
+          walkAndReplace(child);
+        }
+        child = child.nextSibling;
+      }
+    }
+
+    walkAndReplace(doc);
+
+    // Replace data: URIs in <img> tags and inline styles with committed photos
+    var photos = ['assets/images/photo1.png','assets/images/photo2.png'];
+    var idx = 0;
+    var imgs = doc.querySelectorAll('img');
+    imgs.forEach(function(im){
+      if(im.src && im.src.indexOf('data:image')===0){
+        im.src = photos[idx % photos.length]; idx++;
+      }
+    });
+
+    // background-image in styles
+    var all = doc.querySelectorAll('*');
+    all.forEach(function(el){
+      var bg = el.style && el.style.backgroundImage;
+      if(bg && bg.indexOf('data:image')!==-1){
+        el.style.backgroundImage = 'url("'+photos[idx % photos.length]+'")'; idx++;
+      }
+      // also check inline style attribute string
+      var st = el.getAttribute && el.getAttribute('style');
+      if(st && st.indexOf('data:image')!==-1){
+        el.setAttribute('style', st.replace(/url\(["']?data:image[^)]+\)/gi, function(){
+          return 'url("'+photos[idx++ % photos.length]+'")';
+        }));
+      }
+    });
+
+    // serialize back
+    var newSrc = '<!DOCTYPE html>' + doc.documentElement.outerHTML;
+    iframe.setAttribute('srcdoc', newSrc);
+  }catch(e){console.error('srcdoc-patch',e)}
+});
+</script>
 </body>
 </html>
